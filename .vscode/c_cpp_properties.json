@@ -1,0 +1,83 @@
+{
+  "configurations": [
+    {
+      "name": "Arduino",
+      "includePath": [
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\cores\\esp32/**",
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\variants\\esp32/**",
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\libraries\\WiFi\\src/**",
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\libraries\\Network\\src/**",
+        "C:\\Users\\Fuad Hasan\\Documents\\Arduino\\libraries/**",
+        "D:\\dev\\ESP32\\Remote/**",
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-632e0c2a\\esp32\\include/**"
+      ],
+      "forcedInclude": [
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\cores\\esp32\\Arduino.h"
+      ],
+      "compilerPath": "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2302/bin/xtensa-esp32-elf-g++",
+      "compilerArgs": [
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp-x32\\2302/bin/xtensa-esp32-elf-g++",
+        "-MMD",
+        "-c",
+        "@C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-632e0c2a\\esp32/flags/cpp_flags",
+        "-w",
+        "-Os",
+        "-Werror=return-type",
+        "-DF_CPU=240000000L",
+        "-DARDUINO=10607",
+        "-DARDUINO_ESP32_DEV",
+        "-DARDUINO_ARCH_ESP32",
+        "-DARDUINO_BOARD=\"ESP32_DEV\"",
+        "-DARDUINO_VARIANT=\"esp32\"",
+        "-DARDUINO_PARTITION_default",
+        "-DARDUINO_HOST_OS=\"windows\"",
+        "-DARDUINO_FQBN=\"esp32:esp32:esp32:UploadSpeed=921600,CPUFreq=240,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,PSRAM=disabled,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\"",
+        "-DESP32=ESP32",
+        "-DCORE_DEBUG_LEVEL=0",
+        "-DARDUINO_RUNNING_CORE=1",
+        "-DARDUINO_EVENT_RUNNING_CORE=1",
+        "-DARDUINO_USB_CDC_ON_BOOT=0",
+        "@C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-632e0c2a\\esp32/flags/defines",
+        "-ID:\\dev\\ESP32\\Remote",
+        "-iprefix",
+        "C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-632e0c2a\\esp32/include/",
+        "@C:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-632e0c2a\\esp32/flags/includes",
+        "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\tools\\esp32-arduino-libs\\idf-release_v5.1-632e0c2a\\esp32/qio_qspi/include",
+        "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\cores\\esp32",
+        "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\variants\\esp32",
+        "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\libraries\\WiFi\\src",
+        "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\libraries\\Network\\src",
+        "@d:\\dev\\ESP32\\Remote\\build/build_opt.h",
+        "@d:\\dev\\ESP32\\Remote\\build/file_opts",
+        "d:\\dev\\ESP32\\Remote\\build\\sketch\\Remote.ino.cpp",
+        "-o",
+        "d:\\dev\\ESP32\\Remote\\build\\sketch\\Remote.ino.cpp.o"
+      ],
+      "defines": [
+        "F_CPU=240000000L",
+        "ARDUINO=10607",
+        "ARDUINO_ESP32_DEV",
+        "ARDUINO_ARCH_ESP32",
+        "ARDUINO_BOARD=\"ESP32_DEV\"",
+        "ARDUINO_VARIANT=\"esp32\"",
+        "ARDUINO_PARTITION_default",
+        "ARDUINO_HOST_OS=\"windows\"",
+        "ARDUINO_FQBN=\"esp32:esp32:esp32:UploadSpeed=921600,CPUFreq=240,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,PSRAM=disabled,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\"",
+        "ESP32=ESP32",
+        "CORE_DEBUG_LEVEL=0",
+        "ARDUINO_RUNNING_CORE=1",
+        "ARDUINO_EVENT_RUNNING_CORE=1",
+        "ARDUINO_USB_CDC_ON_BOOT=0",
+        "ARDUINO_BOARD=\\\"ESP32_DEV\\\"\"",
+        "ARDUINO_VARIANT=\\\"esp32\\\"\"",
+        "ARDUINO_HOST_OS=\\\"windows\\\"\"",
+        "ARDUINO_FQBN=\\\"esp32:esp32:esp32:UploadSpeed=921600,CPUFreq=240,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,PSRAM=disabled,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default\\\"\"",
+        "ARDUINO_CORE_BUILD",
+        "USBCON"
+      ],
+      "cStandard": "c17",
+      "cppStandard": "c++17"
+    }
+  ],
+  "version": 4
+}

@@ -1,0 +1,17 @@
+{
+  "port": "COM3",
+  "configuration": "UploadSpeed=921600,CPUFreq=240,FlashFreq=80,FlashMode=qio,FlashSize=4M,PartitionScheme=default,DebugLevel=none,PSRAM=disabled,LoopCore=1,EventsCore=1,EraseFlash=none,JTAGAdapter=default,ZigbeeMode=default",
+  "output": "build",
+  "board": "esp32:esp32:esp32",
+  "programmer": "",
+  "useProgrammer": false,
+  "configurationRequired": true,
+  "monitorPortSettings": {
+    "port": "COM3",
+    "baudRate": 115200,
+    "lineEnding": "\r\n",
+    "dataBits": 8,
+    "parity": "none",
+    "stopBits": "one"
+  }
+}
