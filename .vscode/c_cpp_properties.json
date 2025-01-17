@@ -47,11 +47,11 @@
         "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\variants\\esp32",
         "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\libraries\\WiFi\\src",
         "-IC:\\Users\\Fuad Hasan\\AppData\\Local\\Arduino15\\packages\\esp32\\hardware\\esp32\\3.0.7\\libraries\\Network\\src",
-        "@d:\\dev\\ESP32\\Remote\\build/build_opt.h",
-        "@d:\\dev\\ESP32\\Remote\\build/file_opts",
-        "d:\\dev\\ESP32\\Remote\\build\\sketch\\Remote.ino.cpp",
+        "@D:\\dev\\ESP32\\Remote\\build/build_opt.h",
+        "@D:\\dev\\ESP32\\Remote\\build/file_opts",
+        "D:\\dev\\ESP32\\Remote\\build\\sketch\\Remote.ino.cpp",
         "-o",
-        "d:\\dev\\ESP32\\Remote\\build\\sketch\\Remote.ino.cpp.o"
+        "D:\\dev\\ESP32\\Remote\\build\\sketch\\Remote.ino.cpp.o"
       ],
       "defines": [
         "F_CPU=240000000L",
