@@ -1,18 +1,16 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
-namespace BotController {
-
 // Pin Definitions
-constexpr int JOYSTICK_X = 32;    // VRX pin
-constexpr int JOYSTICK_Y = 33;    // VRY pin
-constexpr int JOYSTICK_SW = 35;   // Switch pin
-constexpr int WARNING_LED = 2;
+#define JOYSTICK_X    32  // Joystick X-axis
+#define JOYSTICK_Y    33  // Joystick Y-axis
+#define WARNING_LED   2
 
 // Constants
-constexpr unsigned long BLINK_INTERVAL = 500;
-constexpr int JOYSTICK_THRESHOLD = 2048;  // Mid-point for analog reading (4096/2)
-constexpr int JOYSTICK_DEADZONE = 500;    // Deadzone to prevent drift. This means the joystick must move at least 500 units from the center to register a movement
+#define WARNING_LED_BLINK_INTERVAL 500  // LED blink interval in ms
+#define GAS_THRESHOLD  2000  // Adjust based on your MQ135 calibration
+#define JOYSTICK_THRESHOLD 2048 // Center value of joystick
+#define JOYSTICK_DEADZONE 500  // Deadzone for joystick. At what point should the bot start moving
 
 // Direction enumeration
 enum class Direction : uint8_t {
@@ -23,13 +21,16 @@ enum class Direction : uint8_t {
     Right
 };
 
-// Command types
-enum class CommandType : uint8_t {
-    Movement = 0,
-    CheckConnection
-};
+// Global variables
+unsigned long warningLEDlastBlinkTime = 0;
+bool warningLEDState = false;
+bool obstacleDetected = false;
+bool forwardPressed = false;
 
-// Sensor data structure
+// Bot MAC address
+uint8_t botAddress[] = {0x2C, 0xBC, 0xBB, 0x0D, 0xCE, 0xD0};
+
+// Structure for receiving sensor data
 struct SensorData {
     float temperature;
     float humidity;
@@ -38,66 +39,70 @@ struct SensorData {
     int lightLevel;
 };
 
-// Command data structure
+// Structure for sending commands
 struct CommandData {
-    CommandType type;
     Direction direction;
 };
 
-class Controller {
-private:
-    unsigned long lastBlinkTime = 0;
-    bool ledState = false;
-    bool obstacleDetected = false;
-    bool forwardPressed = false;
-    // MAC: 2c:bc:bb:0d:ce:d0
-    uint8_t botAddress[6] = {0x2c, 0xbc, 0xbb, 0x0d, 0xce, 0xd0};
-    unsigned long lastButtonPress = 0;
-    constexpr static unsigned long DEBOUNCE_DELAY = 200;
-
-    void handleWarningLED() {
-        if (obstacleDetected) {
-            if (forwardPressed) {
-                // Blink LED if trying to move forward with obstacle
-                if (millis() - lastBlinkTime >= BLINK_INTERVAL) {
-                    ledState = !ledState;
-                    digitalWrite(WARNING_LED, ledState);
-                    lastBlinkTime = millis();
-                }
-            } else {
-                // Solid LED if obstacle detected but not moving
-                digitalWrite(WARNING_LED, HIGH);
-            }
-        } else {
-            digitalWrite(WARNING_LED, LOW);
-        }
+void onDataReceived(const esp_now_recv_info_t *esp_now_info, const uint8_t *data, int data_len) {
+    Serial.println("Data received");
+    if (data_len == sizeof(SensorData)) {
+        SensorData sensorData;
+        memcpy(&sensorData, data, sizeof(sensorData));
+        Serial.printf("Temp: %.2f, Humidity: %.2f, AirQuality: %d, Obstacle: %d, LightLevel: %d\n",
+            sensorData.temperature, sensorData.humidity, sensorData.airQuality, sensorData.obstacle, sensorData.lightLevel);
+        processSensorData(sensorData);
+    } else {
+        Serial.printf("Unexpected data length: %d\n", data_len);
     }
+}
 
-    void processSensorData(const SensorData &data) {
-        // Update obstacle status
-        obstacleDetected = data.obstacle;
+void setup() {
+    Serial.begin(115200);
+    
+    // Initialize pins
+    pinMode(JOYSTICK_X, INPUT);
+    pinMode(JOYSTICK_Y, INPUT);
+    pinMode(WARNING_LED, OUTPUT);
+    
+    // Initialize ESP-NOW
+    WiFi.mode(WIFI_STA);
+    if (esp_now_init() != ESP_OK) {
+        Serial.println("ESP-NOW init failed");
+        return;
     }
+    
+    // Register callback
+    esp_now_register_recv_cb(onDataReceived);
+    
+    // Add bot as peer
+    esp_now_peer_info_t peerInfo = {};
+    memcpy(peerInfo.peer_addr, botAddress, 6);
+    peerInfo.channel = 0;
+    peerInfo.encrypt = false;
+    
+    if (esp_now_add_peer(&peerInfo) == ESP_OK) {
+        Serial.println("Peer added successfully");
+    } else {
+        Serial.println("Failed to add peer");
+    }
+}
 
-    void checkJoystick() {
-        CommandData command{CommandType::Movement, Direction::Stop};
-        
-        // Read joystick values
-        int xValue = analogRead(JOYSTICK_X);
-        int yValue = analogRead(JOYSTICK_Y);
-        bool buttonPressed = !digitalRead(JOYSTICK_SW);  // Active LOW
+void loop() {
+    // Check joystick and send commands
+    checkJoystick();
+    // Handle warning LED
+    handleWarningLED();
+}
 
-        // Handle button press with debounce
-        if (buttonPressed && (millis() - lastButtonPress > DEBOUNCE_DELAY)) {
-            command.type = CommandType::CheckConnection;
-            lastButtonPress = millis();
-            esp_now_send(botAddress, reinterpret_cast<uint8_t*>(&command), sizeof(command));
-            return;
-        }
-
-        // Process joystick movement
-        command.type = CommandType::Movement;
-
-        // Determine direction based on joystick position
+void checkJoystick() {
+    CommandData command;
+    command.direction = Direction::Stop;  // Default to stop
+    
+    int xValue = analogRead(JOYSTICK_X);
+    int yValue = analogRead(JOYSTICK_Y);
+    
+// Determine direction based on joystick position
         if (abs(xValue - JOYSTICK_THRESHOLD) > JOYSTICK_DEADZONE || 
             abs(yValue - JOYSTICK_THRESHOLD) > JOYSTICK_DEADZONE) {
             
@@ -124,73 +129,30 @@ private:
             forwardPressed = false;
         }
 
-        //Serial.printf("Direction: %d\n", static_cast<int>(command.direction));
-
-        esp_now_send(botAddress, reinterpret_cast<uint8_t*>(&command), sizeof(command));
-    }
-
-    static void onDataReceived(const esp_now_recv_info_t *esp_now_info, const uint8_t *data, int data_len) {
-        if (data_len == sizeof(SensorData)) {
-            SensorData sensorData;
-            memcpy(&sensorData, data, sizeof(sensorData));
-            Serial.printf("Temp: %.2f, Humidity: %.2f, AirQuality: %d, Obstacle: %d, LightLevel: %d\n",
-                          sensorData.temperature, sensorData.humidity, sensorData.airQuality, sensorData.obstacle, sensorData.lightLevel);
-            instance().processSensorData(sensorData);
-        } else {
-            Serial.printf("Unexpected data length: %d\n", data_len);
-        }
-    }
-
-    static Controller& instance() {
-        static Controller controllerInstance;
-        return controllerInstance;
-    }
-
-public:
-    void setup() {
-        Serial.begin(115200);
-
-        // Configure joystick pins
-        pinMode(JOYSTICK_X, INPUT);
-        pinMode(JOYSTICK_Y, INPUT);
-        pinMode(JOYSTICK_SW, INPUT_PULLUP);
-        
-        pinMode(WARNING_LED, OUTPUT);
-
-        WiFi.mode(WIFI_STA);
-        if (esp_now_init() != ESP_OK) {
-            Serial.println("ESP-NOW init failed");
-            return;
-        }
-
-        esp_now_register_recv_cb(onDataReceived);
-
-        esp_now_peer_info_t peerInfo = {};
-        memcpy(peerInfo.peer_addr, botAddress, 6);
-        peerInfo.channel = 0;
-        peerInfo.encrypt = false;
-
-        if (esp_now_add_peer(&peerInfo) == ESP_OK) {
-            Serial.println("Peer added successfully");
-        } else {
-            Serial.println("Failed to add peer");
-        }
-    }
-
-    void loop() {
-        checkJoystick();
-        handleWarningLED();
-    }
-};
-
-}  // namespace BotController
-
-BotController::Controller controller;
-
-void setup() {
-    controller.setup();
+    
+    // Send command via ESP-NOW
+    esp_now_send(botAddress, (uint8_t*)&command, sizeof(command));
 }
 
-void loop() {
-    controller.loop();
+void handleWarningLED() {
+    if (obstacleDetected) {
+        if (forwardPressed) {
+            // Blink LED if trying to move forward with obstacle
+            if (millis() - warningLEDlastBlinkTime >= WARNING_LED_BLINK_INTERVAL) {
+                warningLEDState = !warningLEDState;
+                digitalWrite(WARNING_LED, warningLEDState);
+                warningLEDlastBlinkTime = millis();
+            }
+        } else {
+            // Solid LED if obstacle detected but not moving
+            digitalWrite(WARNING_LED, HIGH);
+        }
+    } else {
+        digitalWrite(WARNING_LED, LOW);
+    }
+}
+
+void processSensorData(const SensorData &data) {
+    // Update obstacle status
+    obstacleDetected = data.obstacle;
 }
